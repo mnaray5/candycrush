@@ -1,0 +1,91 @@
+/* Copyright (c) 2017 MIT 6.813/6.831 course staff, all rights reserved.
+ * Redistribution of original or derived work requires permission of course staff.
+ */
+
+/* REMOVE ME - dashed lines and height for debugging */
+#mainColumn {
+  width:50%;
+  text-align: center;
+  padding-top: 20px;
+
+}
+
+#lastColumn{
+  width: 25%;
+  text-align: center;
+  padding-left: 10px;
+  padding-top: 20px;
+
+}
+
+#firstColumn{
+  width: 25%;
+  text-align: center;
+  padding-right: 10px;
+}
+
+#GameName{
+  font-weight: bold;
+  color: DarkSlateBlue;
+  font-size: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+
+#GameTable{
+  display: inline;
+}
+
+
+td {
+  border: 1px solid rgb(255, 255, 255);
+  width: 40px;
+  height: 40px;
+  padding: auto;
+}
+
+#move{
+  width: 100px;
+  font-weight: bold;
+  color: cornflowerblue;
+  font-size: large;
+}
+label{
+  font-weight: bold;
+  color: cornflowerblue;
+  font-size: large;
+}
+
+#b1{
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+#b2{
+  grid-column-start: 1;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+#b3{
+  grid-column-start: 3;
+  grid-column-end: 4;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+#b4{
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 3;
+  grid-row-end: 4;
+}
+
+.grid-container {
+  display: grid;
+  grid-gap: 10px;
+}

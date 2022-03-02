@@ -1,0 +1,380 @@
+<!--
+CandyCrush
+Your Name:
+Collaborators:
+-->
+<!DOCTYPE html>
+<html>
+<!--
+/* Copyright (c) 2017 MIT 6.813/6.831 course staff, all rights reserved.
+ * Redistribution of original or derived work requires permission of course staff.
+ */
+-->
+
+<head>
+<meta charset="utf-8">
+<title>CandyCrush</title>
+
+<!-- Load style sheets -->
+<link rel="stylesheet" href=
+  "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css">
+
+<link rel="stylesheet" href="mainLayout.css">
+
+<!-- Use mobile-aware viewport -->
+<meta name="viewport" content=
+  "width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Load any supplemental Javascript libraries here -->
+<script src=
+  "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src=
+  "https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.2/seedrandom.js">
+</script>
+<script src="candy.js"></script>
+<script src="board.js"></script>
+<script src="rules.js"></script>
+<script src="extraFunctions.js"></script>
+
+
+<script>
+  var o = 0;
+  var z = 0;
+  var row = 0;
+  var col = 0;
+  var inputValue = " ";
+  var squares = new Array(8);
+  for (var i = 0; i < squares.length; i++) {
+    squares[i] = new Array(8);
+}
+
+var clickL = 0;
+var clickR = 0;
+var clickU = 0;
+var clickD = 0;
+
+// By default, the first board loaded by your page will be the same 
+// each time you load (which is accomplished by "seeding" the random
+// number generator. This makes testing (and grading!) easier!
+Math.seedrandom(0);
+
+
+// A short jQuery extension to read query parameters from the URL.
+$.extend({
+  getUrlVars: function() {
+    var vars = [], pair;
+    var pairs = window.location.search.substr(1).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      pair = pairs[i].split('=');
+      vars.push(pair[0]);
+      vars[pair[0]] = pair[1] &&
+          decodeURIComponent(pair[1].replace(/\+/g, ' '));
+    }
+    return vars;
+  },
+  getUrlVar: function(name) {
+    return $.getUrlVars()[name];
+  }
+});
+
+// constants
+var DEFAULT_BOARD_SIZE = 8;
+
+// data model at global scope for easier debugging
+var board;
+var rules;
+var count = 0;
+var list = [];
+
+// initialize board
+if ($.getUrlVar('size') && $.getUrlVar('size') >= 3) {
+  board = new Board($.getUrlVar('size'));
+} else {
+  board = new Board(DEFAULT_BOARD_SIZE);
+}
+
+// load a rule
+rules = new Rules(board);
+
+// Final initialization entry point: the Javascript code inside this block
+// runs at the end of start-up when the page has finished loading.
+$(document).ready(function()
+{
+  // Your code here.
+});
+
+
+/* Event Handlers */
+// access the candy object with info.candy
+
+// add a candy to the board
+$(board).on('add', function(e, info)
+{
+  // Your code here.
+  /**
+   * color the table
+   * access the details using info.candy
+   * add colors as building the table
+  **/
+ squares[info.toRow][info.toCol] = info;
+});
+
+
+// move a candy on the board
+$(board).on('move', function(e, info)
+{
+  squares[info.toRow][info.toCol] = info;
+  console.log("moving!");
+  console.log(info);
+  //console.log(gTable.childNodes[0].id);
+  //window.getComputedStyle(colElem, null).getPropertyValue('background-color');
+});
+
+// remove a candy from the board
+$(board).on('remove', function(e, info)
+{
+ console.log("in remove!! set to white!");
+ //get the row and col
+ //turn the row and col into integers
+ //access the element from the table - document.getElementById("a1")?;
+ //change the color and text color to white
+ //.style.backgroundColor = "white";
+ //.style.color = "white";
+
+ candy = new Candy("white", info.candy.id);
+ squares[info.fromRow][info.fromCol].candy = candy; 
+ board.square[info.fromRow][info.fromCol] = null; 
+
+
+ 
+});
+
+// move a candy on the board
+$(board).on('scoreUpdate', function(e, info)
+{
+  // Your code here. To be implemented in pset 2.
+});
+
+// Button Events
+$(document).on('click', "#buttonIDhere", function(evt)
+{
+  // Your code here.
+});
+
+// keyboard events arrive here
+$(document).on('keydown', function(evt) {
+  // Your code here.
+});
+
+
+</script>
+
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div id="firstColumn">
+      <div>
+      <!-- Column 1 Code Here -->
+      <div id = "GameName"> Candy Crush </div>
+      <input id = "NewGame" class = "btn" type = "button" value = "New Game">
+      <script>
+          gameButton = document.getElementById("NewGame");
+          gameButton.addEventListener('click', function(){
+            document.getElementById("move").value = "";
+            console.log("New Game");
+            rules.disableAllButtons();
+            rules.newGameTable();
+            rules.prepareNewGame();
+            rules.makeTable(squares);
+            document.getElementById("CrushOnce").disabled = true;
+            document.getElementById("CrushOnce").style.backgroundColor = "Gainsboro";
+            inputValue = " ";
+            document.getElementById("move").disabled = false;
+            document.getElementById("move").disabled.value = "";
+          });
+      </script>
+      </div>
+  </div>
+
+    <div id="mainColumn">
+            <!--Call prepare new game--> 
+      <script>rules.prepareNewGame();</script>
+
+ 
+     <table id = "GameTable">
+      <script>rules.makeTable(squares);</script>
+     </table>
+
+       
+     
+    </div>
+
+    <div id="lastColumn">
+
+      <!-- Column 3 Code Here -->
+      <form>
+        <label for = "Move"> Move: </label>
+        <input type = "text" id = "move" name = "move">
+        <script>
+          inputBox = document.getElementById("move");
+          inputBox.addEventListener('input', function(){
+          inputValue = inputBox.value;
+            //validate that it is a square on the board
+            var letter = ['a','b','c','d','e','f','g','h'];
+            var num = ['1','2','3','4','5','6','7','8'];
+            if(inputValue.length == 2){
+              if(letter.includes(inputValue.substr(0,1)) && num.includes(inputValue.substr(1,2))){
+                row = parseInt(inputValue.substr(1,2)) - 1;
+                col = parseInt(inputValue.charCodeAt(0)) - 97;
+
+                var up = rules.isMoveTypeValid(board.square[row][col], "up");
+                var down = rules.isMoveTypeValid(board.square[row][col], "down");
+                var left = rules.isMoveTypeValid(board.square[row][col], "left");
+                var right = rules.isMoveTypeValid(board.square[row][col], "right");
+
+                console.log(up + "," + down + "," + left + "," + right);
+                
+                if(up||down||left||right){
+                  rules.enableButtons(up,down,left,right);
+                } else {
+                  rules.disableAllButtons();
+                }
+              }
+
+            } else {
+              rules.disableAllButtons();
+            }
+          });
+        </script>
+        </form>
+
+        
+      <br>
+      <div class = "grid-container">
+        <button type = "button" id = "up" class = "btn" disabled style="background-color: Gainsboro; vertical-align: middle;">↑</button>
+        <script>
+          upButton = document.getElementById("up");
+          upButton.addEventListener('click', function(){
+            //clear the textbox and inputValue
+            inputValue = " ";
+            inputBox = document.getElementById("move");
+            fromCandy = board.square[row][col];
+            toCandy = board.getCandyInDirection(fromCandy, "up");
+            console.log(fromCandy.color);
+            console.log(toCandy.color);
+            board.flipCandies(fromCandy, toCandy);
+            rules.removeTable();
+            rules.makeTable(squares);
+            rules.disableAllButtons();
+            document.getElementById("CrushOnce").disabled = false;
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue";
+            inputBox.value = "";
+            inputBox.disabled = true;
+          });
+
+        </script>
+        <button type = "button" id = "left" class = "btn" disabled style="background-color: Gainsboro; text-align:center;">←</button>
+        <script>
+          leftButton = document.getElementById("left");
+          leftButton.addEventListener('click', function(){
+            //clear the textbox and inputValue
+            inputValue = " ";
+            inputBox = document.getElementById("move");
+            fromCandy = board.square[row][col];
+            toCandy = board.getCandyInDirection(fromCandy, "left");
+            console.log(fromCandy.color);
+            console.log(toCandy.color);
+            board.flipCandies(fromCandy, toCandy);
+            rules.removeTable();
+            rules.makeTable(squares);
+            rules.disableAllButtons();
+            document.getElementById("CrushOnce").disabled = false;
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue";
+            inputBox.value = "";
+            inputBox.disabled = true;
+          });
+        </script>
+
+        <button type = "button" id = "right" class = "btn" disabled style="background-color: Gainsboro; text-align:center;">→</button>
+        <script>
+          rightButton = document.getElementById("right");
+          rightButton.addEventListener('click', function(){
+            //clear the textbox and inputValue
+            inputValue = " ";
+            inputBox = document.getElementById("move");
+            fromCandy = board.square[row][col];
+            toCandy = board.getCandyInDirection(fromCandy, "right");
+            console.log(fromCandy.color);
+            console.log(toCandy.color);
+            board.flipCandies(fromCandy, toCandy);
+            rules.removeTable();
+            rules.makeTable(squares);
+            rules.disableAllButtons();
+            document.getElementById("CrushOnce").disabled = false;
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue";
+            inputBox.value = "";
+            inputBox.disabled = true;
+          });
+
+        </script>
+        <button type = "button" id = "down" class = "btn" disabled style="background-color: Gainsboro; text-align:center;">↓</button>
+        <script>
+          downButton = document.getElementById("down");
+          downButton.addEventListener('click', function(){
+            //clear the textbox and inputValue
+            inputValue = " ";
+            inputBox = document.getElementById("move");
+            fromCandy = board.square[row][col];
+            toCandy = board.getCandyInDirection(fromCandy, "down");
+            console.log(fromCandy.color);
+            console.log(toCandy.color);
+            board.flipCandies(fromCandy, toCandy);
+            rules.removeTable();
+            rules.makeTable(squares);
+            rules.disableAllButtons();
+            document.getElementById("CrushOnce").disabled = false;
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue";
+            inputBox.value = "";
+            inputBox.disabled = true;
+          });
+
+        </script>
+      </div>
+      <br>
+      <input class ="btn" type = "button" id = "CrushOnce" value = "Crush Once" disabled>
+      <script>
+        crushButton = document.getElementById("CrushOnce");
+        crushButton.addEventListener('click', function(){
+          list = rules.getCandyCrushes();
+          console.log(list);
+          rules.removeCrushes(list);
+          rules.removeTable();
+          rules.makeTable(squares);
+          crushButton.disabled = true;
+         //delay for few seconds
+         setTimeout(()=>{
+          rules.moveCandiesDown();   
+          rules.removeTable();
+          rules.makeTable(squares);
+          if(rules.getCandyCrushes().length == 0){
+             crushButton.disabled = true;
+             inputBox.disabled = false;                  
+          } else {
+            crushButton.disabled = false;
+            inputBox.disabled = true;    
+          }
+        }, 1000);
+        });
+    </script>
+      
+    </div>
+  </div> <!-- class="row" -->
+</div> <!-- class="container" -->
+
+</body>
+
+</html>

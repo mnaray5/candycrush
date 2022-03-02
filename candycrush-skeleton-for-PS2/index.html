@@ -1,0 +1,387 @@
+<!--
+CandyCrush
+Your Name:
+Collaborators:
+-->
+<!DOCTYPE html>
+<html>
+<!--
+/* Copyright (c) 2017 MIT 6.813/6.831 course staff, all rights reserved.
+ * Redistribution of original or derived work requires permission of course staff.
+ */
+-->
+
+<head>
+<meta charset="utf-8">
+<title>CandyCrush</title>
+
+<!-- Load style sheets -->
+<link rel="stylesheet" href=
+  "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css">
+
+<link rel="stylesheet" href="mainLayout.css">
+
+<!-- Use mobile-aware viewport -->
+<meta name="viewport" content=
+  "width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Load any supplemental Javascript libraries here -->
+<script src=
+  "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src=
+  "https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.2/seedrandom.js">
+</script>
+<script src="candy.js"></script>
+<script src="board.js"></script>
+<script src="rules.js"></script>
+<script src="extraFunctions.js"></script>
+
+
+<script>
+  var o = 0;
+  var z = 0;
+  var row = 0; //Var for the selected cells row
+  var col = 0; //Var for the selected cells column
+  var inputValue = " "; //Input from the text field
+  var squares = new Array(8); //Local Array of candies like board.square
+  for (var i = 0; i < squares.length; i++) {
+    squares[i] = new Array(8);
+}
+
+// By default, the first board loaded by your page will be the same 
+// each time you load (which is accomplished by "seeding" the random
+// number generator. This makes testing (and grading!) easier!
+Math.seedrandom(0);
+
+
+// A short jQuery extension to read query parameters from the URL.
+$.extend({
+  getUrlVars: function() {
+    var vars = [], pair;
+    var pairs = window.location.search.substr(1).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      pair = pairs[i].split('=');
+      vars.push(pair[0]);
+      vars[pair[0]] = pair[1] &&
+          decodeURIComponent(pair[1].replace(/\+/g, ' '));
+    }
+    return vars;
+  },
+  getUrlVar: function(name) {
+    return $.getUrlVars()[name];
+  }
+});
+
+// constants
+var DEFAULT_BOARD_SIZE = 8;
+
+// data model at global scope for easier debugging
+var board;
+var rules;
+var count = 0;
+var list = [];
+
+// initialize board
+if ($.getUrlVar('size') && $.getUrlVar('size') >= 3) {
+  board = new Board($.getUrlVar('size'));
+} else {
+  board = new Board(DEFAULT_BOARD_SIZE);
+}
+
+// load a rule
+rules = new Rules(board);
+
+// Final initialization entry point: the Javascript code inside this block
+// runs at the end of start-up when the page has finished loading.
+$(document).ready(function()
+{
+  // Your code here.
+});
+
+
+/* Event Handlers */
+// access the candy object with info.candy
+
+// add a candy to the board
+$(board).on('add', function(e, info)
+{
+  // Your code here.
+ squares[info.toRow][info.toCol] = info; //Update the squares candy array with the proper info of each candy on the board
+});
+
+
+// move a candy on the board
+$(board).on('move', function(e, info)
+{
+  squares[info.toRow][info.toCol] = info; //Update the squares candy array with the proper info of each candy on the board
+});
+
+// remove a candy from the board
+$(board).on('remove', function(e, info)
+{
+ candy = new Candy("white", info.candy.id); //Create a new candy with a white background
+ squares[info.fromRow][info.fromCol].candy = candy; //Assign the chosen squares to that candy, changing them to white
+ board.square[info.fromRow][info.fromCol] = null; //Set the chosen squares in board to null to replace them with new candies 
+});
+
+// move a candy on the board
+$(board).on('scoreUpdate', function(e, info)
+{
+  // Your code here. To be implemented in pset 2.
+});
+
+// Button Events
+$(document).on('click', "#buttonIDhere", function(evt)
+{
+  // Your code here.
+});
+
+// keyboard events arrive here
+$(document).on('keydown', function(evt) {
+  // Your code here.
+});
+
+
+</script>
+
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div id="firstColumn">
+      <div>
+      <!-- Column 1 Code Here -->
+      <div id = "GameName"> Candy Crush </div>
+      <input id = "NewGame" class = "btn" type = "button" value = "New Game" style = "background-color: cornflowerblue; color : White">
+      <script>
+        gameButton = document.getElementById("NewGame"); //Get the NewGame button
+
+        //When the user hovers over the button, change the background color to Dark Slate Blue
+        gameButton.onmouseover = function(){
+          this.style.backgroundColor = "DarkSlateBlue";
+          this.style.color = "White";
+        }
+
+        //When the user is not hovering over the button, reset the background color to Cornflower Blue
+        gameButton.onmouseout = function(){
+          this.style.backgroundColor = "CornflowerBlue";
+          this.style.color = "White";
+        }
+
+        //Event Listener for the NewGame Button
+          gameButton.addEventListener('click', function(){
+            console.log("New Game");
+            rules.disableAllButtons(); //Disable all enabled buttons
+            rules.newGameTable(); //Call newGameTable to reset board.square
+            rules.prepareNewGame(); //Call prepareNewGame to make a new table
+            rules.makeTable(squares); //Make the new table
+            document.getElementById("CrushOnce").disabled = true; //Disable the CrushOnce Button
+            document.getElementById("CrushOnce").style.backgroundColor = "Gainsboro"; //Change the background color to default
+            inputValue = " "; //Reset inputValue to nothing
+            document.getElementById("move").disabled = false; //enable the text field
+            document.getElementById("move").value = ""; //Empty the textfield
+            document.getElementById("move").focus(); //Shift focus back to the textfield
+          });
+      </script>
+      </div>
+  </div>
+
+    <div id="mainColumn">
+        <!--Call prepareNewGame--> 
+      <script>rules.prepareNewGame();</script>
+
+ 
+     <table id = "GameTable">
+        <!--Call makeTable--> 
+      <script>rules.makeTable(squares);</script>
+     </table>
+
+       
+     
+    </div>
+
+    <div id="lastColumn">
+
+      <!-- Column 3 Code Here -->
+      <form>
+        <!--Create the text field form--> 
+        <label for = "Move"> Move: </label>
+        <input type = "text" id = "move" name = "move" ng-disabled = "false">
+        <script>
+          inputBox = document.getElementById("move"); //Get the text field
+          inputBox.addEventListener('input', function(){
+          inputValue = inputBox.value; //Get the input from the text field and store it in inputValue
+            
+          //To validate that it is a square on the board
+            var letter = ['a','b','c','d','e','f','g','h'];
+            var num = ['1','2','3','4','5','6','7','8'];
+
+            if(inputValue.length == 2){ //First make sure the input is of length 2
+
+              //Then check to see that the first value is a letter/col, and the second value is a number/row, so it exists in the table
+              if(letter.includes(inputValue.substr(0,1)) && num.includes(inputValue.substr(1,2))){
+                row = parseInt(inputValue.substr(1,2)) - 1; //convert the second value to the row integer
+                col = parseInt(inputValue.charCodeAt(0)) - 97; //convert the first value to the column integer
+
+                //Check if the square is valid in all 4 directions
+                var up = rules.isMoveTypeValid(board.square[row][col], "up");
+                var down = rules.isMoveTypeValid(board.square[row][col], "down");
+                var left = rules.isMoveTypeValid(board.square[row][col], "left");
+                var right = rules.isMoveTypeValid(board.square[row][col], "right");
+
+                console.log(up + "," + down + "," + left + "," + right);
+                
+                if(up||down||left||right){ //If anyone of them are valid, enable those buttons
+                  rules.enableButtons(up,down,left,right);
+                } else { //Otherwise, diable all buttons
+                  rules.disableAllButtons();
+                }
+              }
+
+            } else {
+              rules.disableAllButtons(); //Otherwise, if the length is not 2, disable all buttons
+            }
+          });
+        </script>
+        </form>
+
+        
+      <br>
+      <div class = "grid-container">
+        <input type = "button" id = "b1" class = "btn" disabled style="background-color: Gainsboro;" value = "↑">
+        <script>
+          upButton = document.getElementById("b1"); //Get the up button
+          upButton.addEventListener('click', function(){
+            inputValue = " "; //reset inputValue to empty
+            inputBox = document.getElementById("move"); //get the text field
+            fromCandy = board.square[row][col]; //Assign fromCandy to be the valid chosen candy
+            toCandy = board.getCandyInDirection(fromCandy, "up"); //Assign toCandy to be the candy to swap with fromCandy
+            board.flipCandies(fromCandy, toCandy); //call flipCandies to swap the candies
+            rules.removeTable(); //Remove the current table
+            rules.makeTable(squares); //Call makeTable to remake the table
+            rules.disableAllButtons(); //Disable all the buttons again
+            document.getElementById("CrushOnce").disabled = false; //Enable the CrushOnce Button
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue"; //Change the background color to Cornflower Blue
+            document.getElementById("CrushOnce").style.color = "White"; //Change the text color to white
+            inputBox.value = ""; //Clear the text field
+            inputBox.disabled = true; //Disable the text field
+          });
+
+        </script>
+        <input type = "button" id = "b2" class = "btn" disabled style="background-color: Gainsboro;" value = "←">
+        <script>
+          leftButton = document.getElementById("b2"); //Get the left button
+          leftButton.addEventListener('click', function(){
+            inputValue = " "; //Reset inputVaue to empty
+            inputBox = document.getElementById("move"); //Get the text field
+            fromCandy = board.square[row][col]; //Assign fromCandy to be the valid chosen candy
+            toCandy = board.getCandyInDirection(fromCandy, "left"); //Assign toCandy to be the candy to swap with fromCandy
+            board.flipCandies(fromCandy, toCandy); //call flipCandies to swap the candies
+            rules.removeTable(); //Remove the current table
+            rules.makeTable(squares); //Call makeTable to remake the table
+            rules.disableAllButtons(); //Disable all the buttons again
+            document.getElementById("CrushOnce").disabled = false; //Enable the CrushOnce Button
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue"; //Change the background color to Cornflower Blue
+            document.getElementById("CrushOnce").style.color = "White"; //Change the text color to white
+            inputBox.value = ""; //Clear the text field
+            inputBox.disabled = true; //Disable the text field
+          });
+        </script>
+
+        <input type = "button" id = "b3" class = "btn" disabled style="background-color: Gainsboro; text-align:center;" value="→">
+        <script>
+          rightButton = document.getElementById("b3");
+          rightButton.addEventListener('click', function(){
+            inputValue = " "; //reset inputValue to empty
+            inputBox = document.getElementById("move"); //get the text field
+            fromCandy = board.square[row][col]; //Assign fromCandy to be the valid chosen candy
+            toCandy = board.getCandyInDirection(fromCandy, "right"); //Assign toCandy to be the candy to swap with fromCandy
+            board.flipCandies(fromCandy, toCandy); //call flipCandies to swap the candies
+            rules.removeTable(); //Remove the current table
+            rules.makeTable(squares); //Call makeTable to remake the table
+            rules.disableAllButtons(); //Disable all the buttons again
+            document.getElementById("CrushOnce").disabled = false; //Enable the CrushOnce Button
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue"; //Change the background color to Cornflower Blue
+            document.getElementById("CrushOnce").style.color = "White"; //Change the text color to white
+            inputBox.value = ""; //Clear the text field
+            inputBox.disabled = true; //Disable the text field
+          });
+
+        </script>
+        <input type = "button" id = "b4" class = "btn" disabled style="background-color: Gainsboro;" value="↓">
+        <script>
+          downButton = document.getElementById("b4");
+          downButton.addEventListener('click', function(){
+            inputValue = " "; //reset inputValue to empty
+            inputBox = document.getElementById("move"); //get the text field
+            fromCandy = board.square[row][col]; //Assign fromCandy to be the valid chosen candy
+            toCandy = board.getCandyInDirection(fromCandy, "down"); //Assign toCandy to be the candy to swap with fromCandy
+            board.flipCandies(fromCandy, toCandy); //call flipCandies to swap the candies
+            rules.removeTable(); //Remove the current table
+            rules.makeTable(squares); //Call makeTable to remake the table
+            rules.disableAllButtons(); //Disable all the buttons again
+            document.getElementById("CrushOnce").disabled = false; //Enable the CrushOnce Button
+            document.getElementById("CrushOnce").style.backgroundColor = "CornflowerBlue"; //Change the background color to Cornflower Blue
+            document.getElementById("CrushOnce").style.color = "White"; //Change the text color to white
+            inputBox.value = ""; //Clear the text field
+            inputBox.disabled = true; //Disable the text field
+          });
+
+        </script>
+      </div>
+      <br>
+      <input class ="btn" type = "button" id = "CrushOnce" value = "Crush Once" disabled>
+      <script>
+        crushButton = document.getElementById("CrushOnce"); //Get the CrushOnce button
+        
+        //When the user hovers over the button, change the background color to Dark Slate Blue
+        crushButton.onmouseover = function(){
+          this.style.backgroundColor = "DarkSlateBlue";
+          this.style.color = "White";
+        }
+        //When the user is not hovering over the button, reset the background color to Cornflower Blue
+        crushButton.onmouseout = function(){
+          this.style.backgroundColor = "CornflowerBlue";
+          this.style.color = "White";
+        }
+
+        crushButton.addEventListener('click', function(){
+          list = rules.getCandyCrushes(); //Get the list of candies to crush
+          console.log(list);
+          rules.removeCrushes(list); //Call Remove Crushes with the list
+          rules.removeTable(); //Remove the table
+          rules.makeTable(squares); //Remake the table with the new set of squares
+          crushButton.disabled = true; //disable crushOnce
+          crushButton.style.backgroundColor = "CornflowerBlue"; //Set the background color to Cornflower Blue
+          crushButton.style.color = "White"; //Set the text color to White
+         //delay for .5 seconds
+         setTimeout(()=>{ //After the timeout
+          rules.moveCandiesDown();  //Call moveCandiesDown to move the candies to fill empty spots 
+          rules.removeTable(); //Remove the current table
+          rules.makeTable(squares); //Re-build the new table
+          if(rules.getCandyCrushes().length == 0){ //If there are no more crushes
+             crushButton.disabled = true; //Disable CrushOnce
+             crushButton.style.backgroundColor = "Gainsboro"; //Reset the Background color
+             crushButton.style.color = "Black"; //Reset the text color
+             inputBox.disabled = false; //Enable the textfield
+             inputBox.focus(); //Shift focus to the text field
+          } else { //Otherwise we have more crushes
+            crushButton.disabled = false; //Enable crushOnce
+            inputBox.disabled = true;  //Disable the text box
+            crushButton.style.backgroundColor = "CornflowerBlue"; //Set the background color to Cornflower Blue
+            crushButton.style.color = "White";  //Set the text color to White
+          }
+        }, 500); //Wait for .5 seconds
+        });
+    </script>
+      
+    </div>
+  </div> <!-- class="row" -->
+</div> <!-- class="container" -->
+
+</body>
+
+</html>

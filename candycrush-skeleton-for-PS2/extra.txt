@@ -1,0 +1,165 @@
+
+<script>
+          inputBox = document.getElementById("move");
+          inputBox.addEventListener('input', function(){
+            //read in the input
+            var inputValue = inputBox.value;
+            var left = 0;
+            //validate that it is a square on the board
+            var letter = ['a','b','c','d','e','f','g','h'];
+            var num = ['1','2','3','4','5','6','7','8'];
+            if(inputValue.length == 2){
+              if(letter.find(element => element > inputValue.substr(0,1)) && num.find(element => element > inputValue.substr(1,2))){
+                //fix input for if they clear the text box, the total input should be cleared?
+                //check if it is a valid move on all 4 directions and higlight the apporprite button
+                //document.getElementById("move").disabled = true;
+                var row = parseInt(inputValue.substr(1,2))-1;
+                var col = parseInt(inputValue.charCodeAt(0))-97;
+                var up = rules.isMoveTypeValid(board.square[row][col], "up");
+                var down = rules.isMoveTypeValid(board.square[row][col], "down");
+                var left = rules.isMoveTypeValid(board.square[row][col], "left");
+                var right = rules.isMoveTypeValid(board.square[row][col], "right");
+                console.log(up + ", " + down + "," + left + "," + right);
+                if(up || down || left || right){
+                  rules.enableButtons(up,down,left,right);
+                }
+                crushButton = document.getElementById("CrushOnce");
+                //if a button is pressed
+              if(up){
+               upButton = document.getElementById("b1");
+                upButton.addEventListener('click', function(){
+                  rules.moveCandies("up", board.square[row][col]);
+                  rules.disableAllButtons();
+                  rules.removeTable();
+                  rules.makeTable(squares);
+                  inputBox.disabled = true;                  
+                  inputBox.value = "";
+                  crushButton.disabled = false;
+                  crushButton.style.background = "CornflowerBlue"
+                  clickU++;
+                  console.log("U: " + clickU);
+                });
+
+              }
+
+              if(down){
+                downButton = document.getElementById("b4");
+                downButton.addEventListener('click', function(){
+                  rules.moveCandies("down", board.square[row][col]);
+                  //re-disable all buttons
+                  rules.disableAllButtons();
+                  rules.removeTable();
+                  rules.makeTable(squares);
+                  inputBox.disabled = true;
+                  inputBox.value = "";
+                  crushButton.disabled = false;
+                  crushButton.style.background = "CornflowerBlue"
+                  clickD++;
+                  console.log("D: " + clickD);
+
+                });
+
+              }
+
+              if(left){
+                leftButton = document.getElementById("b2");
+                
+                function leftListener(event){
+                  rules.moveCandies("left", board.square[row][col]);
+                  console.log("left");
+                  //re-disable all buttons
+                  rules.disableAllButtons();
+                  rules.removeTable();
+                  rules.makeTable(squares);
+                  inputBox.disabled = true;
+                  inputBox.value = "";
+                  crushButton.disabled = false;
+                  crushButton.style.background = "CornflowerBlue"
+                  clickL++;
+                  console.log("L: " + clickL);
+
+                }
+
+                leftButton.addEventListener('click', leftListener);
+
+                //leftButton.removeEventListener('click', leftListener);
+
+              }
+
+              
+
+              if(right){
+                rightButton = document.getElementById("b3");
+                rightButton.addEventListener('click', function(){
+                  rules.moveCandies("right", board.square[row][col]);
+                  //re-disable all buttons
+                  rules.disableAllButtons();
+                  rules.removeTable();
+                  rules.makeTable(squares);
+                  inputBox.disabled = true;
+                  inputBox.value = "";
+                  crushButton.disabled = false;
+                  crushButton.style.background = "CornflowerBlue"
+                  clickR++;
+                  console.log("R: " + clickR);
+
+                });
+              }
+
+              }
+            } else {
+              rules.disableAllButtons();
+            }
+
+        });
+        </script>
+
+
+      <script>
+        crushButton = document.getElementById("CrushOnce");
+        crushButton.addEventListener('click', function(){
+          list = rules.getCandyCrushes();
+          console.log(list);
+          rules.removeCrushes(list);
+          rules.removeTable();
+          rules.makeTable(squares);
+          crushButton.disabled = true;
+         //delay for few seconds
+         setTimeout(()=>{
+          rules.moveCandiesDown();   
+          rules.removeTable();
+          rules.makeTable(squares);
+          if(rules.getCandyCrushes().length == 0){
+             crushButton.disabled = true;
+             inputBox.disabled = false;                  
+          } else {
+            crushButton.disabled = false;
+            inputBox.disabled = true;    
+          }
+        }, 1000);
+
+
+
+        });
+    </script>
+
+
+
+
+    <script>
+          inputBox = document.getElementById("move");
+          inputBox.addEventListener('input', function(){
+            var inputValue = inputBox.value;
+            //validate that it is a square on the board
+            var letter = ['a','b','c','d','e','f','g','h'];
+            var num = ['1','2','3','4','5','6','7','8'];
+            if(inputValue.length == 2){
+              if(letter.includes(inputValue.substr(0,1)) && num.includes(inputValue.substr(1,2))){
+                var row = parseInt(inputValue.substr(1,2)) - 1;
+                var col = parseInt(inputValue.charCodeAt(0)) - 97;
+                console.log(inputValue + "-" + row + "," + col);
+              }
+
+            }
+          });
+        </script>

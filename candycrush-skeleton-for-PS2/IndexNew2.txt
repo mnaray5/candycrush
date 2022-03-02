@@ -1,0 +1,251 @@
+<!--
+CandyCrush
+Your Name:
+Collaborators:
+-->
+<!DOCTYPE html>
+<html>
+<!--
+/* Copyright (c) 2017 MIT 6.813/6.831 course staff, all rights reserved.
+ * Redistribution of original or derived work requires permission of course staff.
+ */
+-->
+
+<head>
+<meta charset="utf-8">
+<title>CandyCrush</title>
+
+<!-- Load style sheets -->
+<link rel="stylesheet" href=
+  "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css">
+
+<link rel="stylesheet" href="mainLayout.css">
+
+<!-- Use mobile-aware viewport -->
+<meta name="viewport" content=
+  "width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Load any supplemental Javascript libraries here -->
+<script src=
+  "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src=
+  "https://cdnjs.cloudflare.com/ajax/libs/seedrandom/2.4.2/seedrandom.js">
+</script>
+<script src="candy.js"></script>
+<script src="board.js"></script>
+<script src="rules.js"></script>
+<script src="extraFunctions.js"></script>
+
+
+<script>
+  var o = 0;
+  var z = 0;
+  var squares = new Array(8);
+  for (var i = 0; i < squares.length; i++) {
+    squares[i] = new Array(8);
+}
+
+var clickL = 0;
+var clickR = 0;
+var clickU = 0;
+var clickD = 0;
+
+// By default, the first board loaded by your page will be the same 
+// each time you load (which is accomplished by "seeding" the random
+// number generator. This makes testing (and grading!) easier!
+Math.seedrandom(0);
+
+
+// A short jQuery extension to read query parameters from the URL.
+$.extend({
+  getUrlVars: function() {
+    var vars = [], pair;
+    var pairs = window.location.search.substr(1).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+      pair = pairs[i].split('=');
+      vars.push(pair[0]);
+      vars[pair[0]] = pair[1] &&
+          decodeURIComponent(pair[1].replace(/\+/g, ' '));
+    }
+    return vars;
+  },
+  getUrlVar: function(name) {
+    return $.getUrlVars()[name];
+  }
+});
+
+// constants
+var DEFAULT_BOARD_SIZE = 8;
+
+// data model at global scope for easier debugging
+var board;
+var rules;
+var count = 0;
+var list = [];
+
+// initialize board
+if ($.getUrlVar('size') && $.getUrlVar('size') >= 3) {
+  board = new Board($.getUrlVar('size'));
+} else {
+  board = new Board(DEFAULT_BOARD_SIZE);
+}
+
+// load a rule
+rules = new Rules(board);
+
+// Final initialization entry point: the Javascript code inside this block
+// runs at the end of start-up when the page has finished loading.
+$(document).ready(function()
+{
+  // Your code here.
+});
+
+
+/* Event Handlers */
+// access the candy object with info.candy
+
+// add a candy to the board
+$(board).on('add', function(e, info)
+{
+  // Your code here.
+  /**
+   * color the table
+   * access the details using info.candy
+   * add colors as building the table
+  **/
+ squares[info.toRow][info.toCol] = info;
+});
+
+
+// move a candy on the board
+$(board).on('move', function(e, info)
+{
+  squares[info.toRow][info.toCol] = info;
+  console.log("moving!");
+  console.log(info);
+});
+
+// remove a candy from the board
+$(board).on('remove', function(e, info)
+{
+ console.log("in remove!!");
+ candy = new Candy("white", info.candy.id);
+ squares[info.fromRow][info.fromCol].candy = candy; 
+ board.square[info.fromRow][info.fromCol] = null; 
+});
+
+// move a candy on the board
+$(board).on('scoreUpdate', function(e, info)
+{
+  // Your code here. To be implemented in pset 2.
+});
+
+// Button Events
+$(document).on('click', "#buttonIDhere", function(evt)
+{
+  // Your code here.
+});
+
+// keyboard events arrive here
+$(document).on('keydown', function(evt) {
+  // Your code here.
+});
+
+
+</script>
+
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="row">
+    <div id="firstColumn">
+      <div>
+      <!-- Column 1 Code Here -->
+      <div id = "GameName"> Candy Crush </div>
+      <input id = "NewGame" class = "btn" type = "button" value = "New Game">
+      <script>
+          gameButton = document.getElementById("NewGame");
+          gameButton.addEventListener('click', function(){
+            //inputBox.value = "";
+            console.log("New Game");
+            rules.disableAllButtons();
+           rules.newGameTable();
+           // rules.removeTable();
+            rules.prepareNewGame();
+            rules.makeTable(squares);
+            //disable crush once
+          });
+      </script>
+      </div>
+  </div>
+
+    <div id="mainColumn">
+            <!--Call prepare new game--> 
+      <script>rules.prepareNewGame();</script>
+
+ 
+     <table id = "GameTable">
+      <script>rules.makeTable(squares);</script>
+     </table>
+
+       
+     
+    </div>
+
+    <div id="lastColumn">
+
+      <!-- Column 3 Code Here -->
+      <form>
+        <label for = "Move"> Move: </label>
+        <input type = "text" id = "move" name = "move">
+        
+        </form>
+
+        
+      <br>
+      <div class = "grid-container">
+        <button type = "button" id = "b1" class = "btn" disabled style="background-color: Gainsboro;">↑</button>
+        <button type = "button" id = "b2" class = "btn" disabled style="background-color: Gainsboro;">←</button>
+        <button type = "button" id = "b3" class = "btn" disabled style="background-color: Gainsboro;">→</button>
+        <button type = "button" id = "b4" class = "btn" disabled style="background-color: Gainsboro;">↓</button>
+      </div>
+      <br>
+      <input class ="btn" type = "button" id = "CrushOnce" value = "Crush Once" disabled>
+      <script>
+        crushButton = document.getElementById("CrushOnce");
+        crushButton.addEventListener('click', function(){
+          list = rules.getCandyCrushes();
+          console.log(list);
+          rules.removeCrushes(list);
+          rules.removeTable();
+          rules.makeTable(squares);
+          crushButton.disabled = true;
+         //delay for few seconds
+         setTimeout(()=>{
+          rules.moveCandiesDown();   
+          rules.removeTable();
+          rules.makeTable(squares);
+          if(rules.getCandyCrushes().length == 0){
+             crushButton.disabled = true;
+             inputBox.disabled = false;                  
+          } else {
+            crushButton.disabled = false;
+            inputBox.disabled = true;    
+          }
+        }, 1000);
+
+
+
+        });
+    </script>
+      
+    </div>
+  </div> <!-- class="row" -->
+</div> <!-- class="container" -->
+
+</body>
+
+</html>
